@@ -1,2 +1,4 @@
 # Pass_Safer
-Sistema de gerenciamento de senhas criptografadas e seguras
+Sistema pessoal de gerenciamento de senhas criptografadas e seguras
+
+# Ainda em desenvolvimento...

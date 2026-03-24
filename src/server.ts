@@ -1,17 +1,27 @@
 import dotenv from "dotenv";
+import { ENV } from "./config/env.ts";
+import { connectDB } from "./config/Database.ts";
+import app from "./app.ts";
 dotenv.config();
 
-import express from "express";
-import type { Request, Response } from "express";
+const startServer = async (): Promise<void> => {
+   try {
+        await connectDB();
+        const server = app.listen(ENV.PORT, () => {
+            console.log(`Aplicação disponível em http://localhost:${ENV.PORT}`);
+        });
 
-const app = express();
-app.use(express.json());
+        const gracefull = async (): Promise<void> => {
+            console.log(`Encerrando o servidor...`);
+            server.close(() => process.exit(0));
+        };
+        
+        process.on("SIGINT", gracefull);
+        process.on("SIGTERM", gracefull);
+   } catch (error) {
+        console.error("Erro ao iniciar o servidor:", error);
+        process.exit(1);
+   }
+};
 
-app.get("/", (req: Request, res: Response) => {
-    res.send("Hello, Pass_Safer!");
-});
-
-const port = process.env.PORT ?? 3000;
-app.listen(port, () => {
-    console.log(`Aplicação disponível em http://localhost:${port}`);
-});
+startServer();
