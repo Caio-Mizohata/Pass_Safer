@@ -8,5 +8,4 @@ PassRouter.post('/decrypt-passwords', PasswordController.getPasswords);
 PassRouter.put('/passwords/:id', PasswordController.updatePassword);
 PassRouter.delete('/passwords/:id', PasswordController.deletePassword);
 
-
 export default PassRouter;

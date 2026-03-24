@@ -3,55 +3,50 @@ import { Schema, model, Document, Types } from "mongoose";
 export interface IPasswordEntry extends Document {
     userId: Types.ObjectId; 
     serviceName: string; 
-    username?: string; 
-    passwordHash: {
-        iv: string;
-        tag: string;
-        content: string;
+    usernameAccount?: string | null; 
+    passwordHash: { 
+        iv: string; 
+        tag: string; 
+        content: string; 
     };
-    createdAt: Date;
-    updatedAt: Date; 
+    notes?: string | null;
 }
 
-const PasswordEntrySchema: Schema<IPasswordEntry> = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+const PasswordEntrySchema = new Schema<IPasswordEntry>({
+    userId: { 
+        type: Schema.Types.ObjectId, 
+        ref: "User", 
+        required: true 
     },
-    serviceName: {
-        type: String,
-        required: true,
-        trim: true,
-        describe: "Name of the service (e.g., 'Gmail', 'Facebook')"
+    serviceName: { 
+        type: String, 
+        required: true, 
+        trim: true 
     },
-    username: {
-        type: String,
-        required: false,
-        trim: true,
+    usernameAccount: { 
+        type: String, 
+        trim: true 
     },
     passwordHash: {
-        iv: {
-            type: String,
-            required: true,
+        iv: { 
+            type: String, 
+            required: true 
         },
-        tag: {
-            type: String,
-            required: true,
+        tag: { 
+            type: String, 
+            required: true 
         },
-        content: {
-            type: String,
-            required: true,
+        content: { 
+            type: String, 
+            required: true 
         },
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+    notes: { 
+        type: String, 
+        default: null, 
+        trim: true, 
+        maxLength: 500 
     }
-});
+}, { timestamps: true });
 
 export const PasswordEntry = model<IPasswordEntry>("PasswordEntry", PasswordEntrySchema);

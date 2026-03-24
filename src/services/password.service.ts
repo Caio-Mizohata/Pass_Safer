@@ -1,77 +1,42 @@
 import { PasswordEntry } from "../models/PasswordEntry.ts";
 import { EncryptionService } from "./encryption.service.ts";
-import type { IPasswordEntry } from "../interfaces/IPasswordEntry.ts";
+import { Types } from "mongoose";
 
 export class PasswordService {
-    static async savePassword(userId: string, serviceName: string, username: string, password: string): Promise<IPasswordEntry> {
-        const encryptedPassword = EncryptionService.encrypt(password);
-        const entry = new PasswordEntry({
-            userId,
+    static async savePassword(userId: string, serviceName: string, usernameAccount: string, password: string) {
+        return await PasswordEntry.create({
+            userId: new Types.ObjectId(userId),
             serviceName,
-            username,
-            passwordHash: {
-                content: encryptedPassword.content,
-                iv: encryptedPassword.iv,
-                tag: encryptedPassword.tag
-            }
+            usernameAccount: usernameAccount || null,
+            passwordHash: EncryptionService.encrypt(password)
         });
-        const saved = await entry.save();
-
-        return {
-            id: saved._id.toString(),
-            userId: saved.userId.toString(),
-            serviceName: saved.serviceName,
-            usernameEnc: saved.username ?? null,
-            passwordEnc: saved.passwordHash.content,
-            iv: saved.passwordHash.iv,
-            tag: saved.passwordHash.tag,
-            createdAt: saved.createdAt,
-            updatedAt: saved.updatedAt,
-        } as IPasswordEntry;
     }
 
-    static async DecryptPasswordByUserId(userId: string): Promise<IPasswordEntry[]> {
-        const entries = await PasswordEntry.find({ userId });
-        if (!entries || entries.length === 0) return [];
+    static async getDecryptedPasswords(userId: string) {
+        const entries = await PasswordEntry.find({ userId: new Types.ObjectId(userId) });
+        
         return entries.map(entry => ({
-            userId: entry.userId.toString(),
-            serviceName: entry.serviceName,
-            usernameEnc: entry.username ?? null,
-            passwordEnc: EncryptionService.decrypt({
-                content: entry.passwordHash.content,
-                iv: entry.passwordHash.iv,
-                tag: entry.passwordHash.tag
-            }),
-            createdAt: entry.createdAt,
-            updatedAt: entry.updatedAt,
-        } as IPasswordEntry));
+            id: entry._id,
+            // serviceName: entry.serviceName,
+            // usernameAccount: entry.usernameAccount,
+            password: EncryptionService.decrypt(entry.passwordHash),
+            // notes: entry.notes,
+        }));
     }
 
+    static async updatePassword(entryId: string, userId: string, data: { serviceName?: string; usernameAccount?: string; password?: string; notes?: string }) {
+        const entry = await PasswordEntry.findOne({ _id: entryId, userId: new Types.ObjectId(userId) });
+        if (!entry) throw new Error("Acesso negado ou entrada não encontrada");
 
-    async updatePassword(entryId: string, userId: string, serviceName?: string, username?: string, password?: string): Promise<void> {
-        const entry = await PasswordEntry.findById(entryId);
-        if (!entry) throw new Error('Entry não encontrado');
-        if (entry.userId.toString() !== userId) throw new Error("Acesso negado: usuário não é o proprietário da senha");
+        if (data.serviceName) entry.serviceName = data.serviceName;
+        if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount;
+        if (data.notes !== undefined) entry.notes = data.notes;
+        if (data.password) entry.passwordHash = EncryptionService.encrypt(data.password);
 
-        const updateData: any = {};
-        if (serviceName !== undefined) updateData.serviceName = serviceName;
-        if (username !== undefined) updateData.username = username;
-        if (password !== undefined) {
-            const encryptedPassword = EncryptionService.encrypt(password);
-            updateData.passwordHash = {
-                content: encryptedPassword.content,
-                iv: encryptedPassword.iv,
-                tag: encryptedPassword.tag
-            };
-        }
-
-        if (Object.keys(updateData).length > 0) {
-            updateData.updatedAt = new Date();
-            await PasswordEntry.findByIdAndUpdate(entryId, { $set: updateData });
-        }
+        await entry.save();
     }
 
-    async deletePassword(entryId: string, userId: string): Promise<void> {
-        await PasswordEntry.deleteOne({ _id: entryId, userId: userId });
+    static async deletePassword(entryId: string, userId: string): Promise<void> {
+        await PasswordEntry.deleteOne({ _id: entryId, userId: new Types.ObjectId(userId) });
     }
 }

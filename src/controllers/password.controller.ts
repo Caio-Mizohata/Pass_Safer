@@ -14,24 +14,36 @@ export class PasswordController {
 
     static async getPasswords(req: Request, res: Response, next: NextFunction) {
         try {
-            const entries = await PasswordService.DecryptPasswordByUserId(req.user!.id);
-            if (!req.user!.id) return res .status(400).json({ message: 'ID do usuário não encontrado' });
+            if (!req.user?.id) {
+                res.status(400).json({ message: 'ID do usuário não encontrado' });
+                return;
+            }
+            const entries = await PasswordService.getDecryptedPasswords(req.user.id);
             res.json(entries);
         } catch (error) {
             next(error);
-        } 
+        }
     }
 
     static async updatePassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const { serviceName, username, password } = req.body;
+            const { serviceName, username, password, notes } = req.body;
+            
             if (!id || typeof id !== 'string') {
                 res.status(400).json({ message: 'ID inválido' });
                 return;
             }
-            await new PasswordService().updatePassword(id, req.user!.id, serviceName, username, password);
-            res.json({ message: `${serviceName ? `Serviço ${serviceName} ` : ''}${username ? `Usuário ${username} ` : ''}${password ? `Senha ` : ''} atualizada com sucesso` });
+
+            await PasswordService.updatePassword(id, req.user!.id, { serviceName, usernameAccount: username, password, notes });
+            
+            const updatedFields = [];
+            if (serviceName) updatedFields.push('Serviço');
+            if (username) updatedFields.push('Usuário');
+            if (password) updatedFields.push('Senha');
+            if (notes) updatedFields.push('Notas');
+           
+            res.json({ message: `${updatedFields.join(', ')} atualizado(s) com sucesso`.trim() });
         } catch (error) {
             next(error);
         }
@@ -44,7 +56,7 @@ export class PasswordController {
                 res.status(400).json({ message: 'ID inválido' });
                 return;
             }
-            await new PasswordService().deletePassword(id, req.user!.id);
+            await PasswordService.deletePassword(id, req.user!.id);
             res.json({ message: 'Senha deletada com sucesso' });
         } catch (error) {
             next(error);

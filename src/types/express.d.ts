@@ -1,14 +1,12 @@
+import { IDecodedToken } from "../interfaces/IDecodedToken.ts";
+
 declare global {
     namespace Express {
         interface Request {
-            userId?: string;
-            user?: {
-                id: string;
-                email?: string;
-                username?: string;
-            };
+            user?: IDecodedToken;
+            csrfToken?: () => string;
         }
     }
 }
 
-export {};
+export { };

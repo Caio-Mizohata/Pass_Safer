@@ -1,16 +1,18 @@
-import dotenv from 'dotenv';
-dotenv.config({ quiet: true });
-
-const encodeIf = (v?: string) => (v ? encodeURIComponent(v) : undefined);
+const getEnv = (key: string, encode = false): string => {
+    const value = process.env[key];
+    if (!value) throw new Error(`FATAL: Variável de ambiente ausente: ${key}`);
+    return encode ? encodeURIComponent(value) : value;
+};
 
 export const ENV = {
-    MONGO_INITDB_ROOT_USERNAME: encodeIf(process.env.MONGO_INITDB_ROOT_USERNAME),
-    MONGO_INITDB_ROOT_PASSWORD: encodeIf(process.env.MONGO_INITDB_ROOT_PASSWORD),
-    MONGO_INITDB_DATABASE: encodeIf(process.env.MONGO_INITDB_DATABASE),
-    MONGO_AUTH_SOURCE: encodeIf(process.env.MONGO_AUTH_SOURCE),
-    PORT: process.env.PORT,
-    NODE_ENV: process.env.NODE_ENV,
-    SALT: process.env.SALT,
-    JWT_SECRET: process.env.JWT_SECRET,
-    ENCRYPTION_KEY: process.env.ENCRYPTION_KEY
-}
+    MONGO_INITDB_ROOT_USERNAME: getEnv('MONGO_INITDB_ROOT_USERNAME', true),
+    MONGO_INITDB_ROOT_PASSWORD: getEnv('MONGO_INITDB_ROOT_PASSWORD', true),
+    MONGO_INITDB_DATABASE: getEnv('MONGO_INITDB_DATABASE', true),
+    MONGO_AUTH_SOURCE: getEnv('MONGO_AUTH_SOURCE', true),
+    PORT: getEnv('PORT'),
+    NODE_ENV: getEnv('NODE_ENV'),
+    SALT: getEnv('SALT'),
+    JWT_SECRET: getEnv('JWT_SECRET'),
+    ENCRYPTION_KEY: getEnv('ENCRYPTION_KEY'),
+    SESSION_SECRET: getEnv('SESSION_SECRET'),
+};
