@@ -4,6 +4,8 @@ import { Types } from "mongoose";
 
 export class PasswordService {
     static async savePassword(userId: string, serviceName: string, usernameAccount: string, password: string) {
+        if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
+
         return await PasswordEntry.create({
             userId: new Types.ObjectId(userId),
             serviceName,
@@ -12,20 +14,29 @@ export class PasswordService {
         });
     }
 
-    static async getDecryptedPasswords(userId: string) {
-        const entries = await PasswordEntry.find({ userId: new Types.ObjectId(userId) });
-        
-        return entries.map(entry => ({
+    static async getDecryptedPasswordById(entryId: string, userId: string) {
+        if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
+            throw new Error('IDs inválidos');
+        }
+
+        const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
+        if (!entry) throw new Error('Senha não encontrada ou acesso negado');
+
+        return {
             id: entry._id,
-            // serviceName: entry.serviceName,
-            // usernameAccount: entry.usernameAccount,
+            serviceName: entry.serviceName,
+            usernameAccount: entry.usernameAccount,
             password: EncryptionService.decrypt(entry.passwordHash),
-            // notes: entry.notes,
-        }));
+            notes: entry.notes,
+        };
     }
 
     static async updatePassword(entryId: string, userId: string, data: { serviceName?: string; usernameAccount?: string; password?: string; notes?: string }) {
-        const entry = await PasswordEntry.findOne({ _id: entryId, userId: new Types.ObjectId(userId) });
+        if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
+            throw new Error("Parâmetros inválidos");
+        }
+
+        const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
         if (!entry) throw new Error("Acesso negado ou entrada não encontrada");
 
         if (data.serviceName) entry.serviceName = data.serviceName;
@@ -37,6 +48,11 @@ export class PasswordService {
     }
 
     static async deletePassword(entryId: string, userId: string): Promise<void> {
-        await PasswordEntry.deleteOne({ _id: entryId, userId: new Types.ObjectId(userId) });
+        if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
+            throw new Error("Parâmetros inválidos");
+        }
+
+        const result = await PasswordEntry.deleteOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
+        if (result.deletedCount === 0) throw new Error("Acesso negado ou entrada não encontrada");
     }
 }
