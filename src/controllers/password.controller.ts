@@ -56,18 +56,18 @@ export class PasswordController {
             }
 
             const { id } = req.params;
-            const { serviceName, username, password, notes } = req.body;
-
+            const { serviceName, usernameAccount, password, notes } = req.body;
+            
             if (!id || typeof id !== 'string') {
                 res.status(400).json({ message: 'ID da credencial inválido' });
                 return;
             }
 
-            await PasswordService.updatePassword(id, req.user.id, { serviceName, usernameAccount: username, password, notes });
+            await PasswordService.updatePassword(id, req.user.id, { serviceName, usernameAccount: usernameAccount, password, notes });
 
             const updatedFields = [];
             if (serviceName) updatedFields.push('Serviço');
-            if (username) updatedFields.push('Usuário');
+            if (usernameAccount) updatedFields.push('Usuário');
             if (password) updatedFields.push('Senha');
             if (notes) updatedFields.push('Notas');
 

@@ -25,7 +25,8 @@ const PasswordEntrySchema = new Schema<IPasswordEntry>({
     },
     usernameAccount: { 
         type: String, 
-        trim: true 
+        trim: true, 
+        default: null
     },
     passwordHash: {
         iv: { 

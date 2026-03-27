@@ -9,7 +9,7 @@ export class PasswordService {
         return await PasswordEntry.create({
             userId: new Types.ObjectId(userId),
             serviceName,
-            usernameAccount: usernameAccount || null,
+            usernameAccount: usernameAccount?.trim() ? usernameAccount : null,
             passwordHash: EncryptionService.encrypt(password)
         });
     }
@@ -39,11 +39,10 @@ export class PasswordService {
         const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
         if (!entry) throw new Error("Acesso negado ou entrada não encontrada");
 
-        if (data.serviceName) entry.serviceName = data.serviceName;
-        if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount;
+        if (data.serviceName !== undefined) entry.serviceName = data.serviceName;
+        if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount.trim() ? data.usernameAccount : null;
         if (data.notes !== undefined) entry.notes = data.notes;
-        if (data.password) entry.passwordHash = EncryptionService.encrypt(data.password);
-
+        if (data.password !== undefined) entry.passwordHash = EncryptionService.encrypt(data.password);
         await entry.save();
     }
 
