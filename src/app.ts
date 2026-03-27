@@ -18,6 +18,7 @@ class App {
 
     middlewares(): void {
         this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
         // this.app.use(csrfMiddleware);
     }
 
