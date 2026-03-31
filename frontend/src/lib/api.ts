@@ -12,13 +12,36 @@ import type {
   UpdatePasswordResponse,
   DeletePasswordResponse,
   PasswordSummary,
-} from "@/types/api";
+} from "@/types/api.ts";
 
-const rawBase = import.meta.env.VITE_API_BASE;
-if (!rawBase) {
-  throw new Error('Variável de ambiente VITE_API_BASE não definida. Defina-a em frontend/.env com a URL completa');
+// Define um fallback seguro (relativo) caso a variável não exista no .env
+const rawBase = import.meta.env.VITE_API_BASE || "/api";
+
+if (rawBase === "/api") {
+  console.warn("⚠️ VITE_API_BASE não definida. Utilizando o fallback padrão: '/api'. Certifique-se de que o proxy do Vite está configurado.");
 }
-const API_BASE_URL = rawBase.startsWith('http') ? rawBase : `http://${rawBase}`;
+
+// Configurações de normalização da URL base da API para garantir consistência e evitar erros comuns de formatação
+export const normalizeApiBase = (base: string): string => {
+  // Remoção de espaços em branco e barras finais para evitar problemas de concatenação
+  const trimmed = base.trim().replace(/\/+$/, "");
+
+  // Verificação simples para URLs absolutas (com http:// ou https://)
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+
+  // Caminho relativo que começa com "/"
+  if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+
+  // Se for um domínio puro do ngrok sem protocolo, assume HTTPS por segurança
+  return `https://${trimmed}`;
+};
+
+
+const API_BASE_URL = normalizeApiBase(rawBase);
 const REQUEST_TIMEOUT_MS = 15000;
 const CSRF_HEADER_NAME = import.meta.env.VITE_CSRF_HEADER_NAME ?? "X-CSRF-Token";
 const CSRF_BOOTSTRAP_ENDPOINT = import.meta.env.VITE_CSRF_ENDPOINT ?? "/csrf-token";
@@ -395,25 +418,25 @@ export const authApi = {
   bootstrapCsrf: () => bootstrapCsrfToken(),
 
   register: (data: RegisterRequest) =>
-    request<RegisterResponse>("/register", {
+    request<RegisterResponse>("/v1/register", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
   login: (data: LoginRequest) =>
-    request<LoginResponse>("/login", {
+    request<LoginResponse>("/v1/login", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
   logout: () =>
-    request<LogoutResponse>("/logout", {
+    request<LogoutResponse>("/v1/logout", {
       method: "POST",
     }),
 
   checkSession: async () => {
     try {
-      await request<unknown[]>("/passwords", { method: "GET" }, { skipGlobalErrorHandler: true });
+      await request<unknown[]>("/v1/passwords", { method: "GET" }, { skipGlobalErrorHandler: true });
       return { authenticated: true };
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
@@ -426,14 +449,14 @@ export const authApi = {
 
 export const passwordsApi = {
   list: async () => {
-    const data = await request<unknown[]>("/passwords", {
+    const data = await request<unknown[]>("/v1/passwords", {
       method: "GET",
     });
     return data.map((item) => normalizePasswordSummary(item)) as PasswordListResponse[];
   },
 
   create: async (data: CreatePasswordRequest) => {
-    const created = await request<unknown>("/passwords", {
+    const created = await request<unknown>("/v1/passwords", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -441,18 +464,18 @@ export const passwordsApi = {
   },
 
   getById: async (id: string) => {
-    const data = await request<unknown>(`/passwords/${id}`);
+    const data = await request<unknown>(`/v1/passwords/${id}`);
     return normalizePasswordDetail(data);
   },
 
   update: (id: string, data: UpdatePasswordRequest) =>
-    request<UpdatePasswordResponse>(`/passwords/${id}`, {
+    request<UpdatePasswordResponse>(`/v1/passwords/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
   delete: (id: string) =>
-    request<DeletePasswordResponse>(`/passwords/${id}`, {
+    request<DeletePasswordResponse>(`/v1/passwords/${id}`, {
       method: "DELETE",
     }),
 };

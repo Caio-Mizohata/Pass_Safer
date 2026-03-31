@@ -14,6 +14,7 @@ class App {
 
     constructor() {
         this.app = express();
+        this.app.set("trust proxy", 1); // Habilita o reconhecimento de proxies (importante para ngrok)
         this.middlewares();
         this.routes();
         this.errorHandling();

@@ -5,10 +5,10 @@ import { passwordLimiter } from "../middlewares/rateLimit.middleware.ts";
 
 const PassRouter = Router();
 
-PassRouter.post('/passwords', passwordLimiter, validateAllowedKeys(['serviceName', 'password', 'usernameAccount', 'notes']), PasswordController.savePassword);
-PassRouter.get('/passwords', passwordLimiter, PasswordController.getAllPasswords);
-PassRouter.get('/passwords/:id', passwordLimiter, PasswordController.getPasswords);
-PassRouter.put('/passwords/:id', passwordLimiter, validateAllowedKeys(['serviceName', 'usernameAccount', 'password', 'notes']), PasswordController.updatePassword);
-PassRouter.delete('/passwords/:id', passwordLimiter, PasswordController.deletePassword);
+PassRouter.post('/api/v1/passwords', passwordLimiter, validateAllowedKeys(['serviceName', 'password', 'usernameAccount', 'notes']), PasswordController.savePassword);
+PassRouter.get('/api/v1/passwords', passwordLimiter, PasswordController.getAllPasswords);
+PassRouter.get('/api/v1/passwords/:id', passwordLimiter, PasswordController.getPasswords);
+PassRouter.put('/api/v1/passwords/:id', passwordLimiter, validateAllowedKeys(['serviceName', 'usernameAccount', 'password', 'notes']), PasswordController.updatePassword);
+PassRouter.delete('/api/v1/passwords/:id', passwordLimiter, PasswordController.deletePassword);
 
 export default PassRouter;

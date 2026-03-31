@@ -6,12 +6,12 @@ import { authLimiter } from '../middlewares/rateLimit.middleware.ts';
 
 const Authrouter = Router();
 
-Authrouter.get('/csrf-token', issueCsrfToken, (req, res) => {
+Authrouter.get('/api/csrf-token', issueCsrfToken, (req, res) => {
     res.status(200).json({ message: 'Token CSRF emitido com sucesso' });
 });
 
-Authrouter.post('/register', authLimiter, issueCsrfToken, AuthController.register);
-Authrouter.post('/login', authLimiter, issueCsrfToken, AuthController.login);
-Authrouter.post('/logout', authMiddleware, AuthController.logout);
+Authrouter.post('/api/v1/register', authLimiter, issueCsrfToken, AuthController.register);
+Authrouter.post('/api/v1/login', authLimiter, issueCsrfToken, AuthController.login);
+Authrouter.post('/api/v1/logout', authMiddleware, AuthController.logout);
 
 export default Authrouter;
