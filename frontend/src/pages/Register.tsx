@@ -13,7 +13,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  // const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -23,14 +23,14 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "As senhas não coincidem.",
-      });
-      return;
-    }
+    // if (password !== confirmPassword) {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "Erro",
+    //     description: "As senhas não coincidem.",
+    //   });
+    //   return;
+    // }
 
     if (password.length < 8) {
       toast({
@@ -145,7 +145,7 @@ export default function Register() {
                   </button>
                 </div>
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar senha</Label>
                 <Input
                   id="confirmPassword"
@@ -156,7 +156,7 @@ export default function Register() {
                   required
                   autoComplete="new-password"
                 />
-              </div>
+              </div> */}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Criando conta..." : "Criar conta"}
               </Button>

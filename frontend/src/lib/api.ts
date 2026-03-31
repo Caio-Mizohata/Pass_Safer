@@ -14,13 +14,17 @@ import type {
   PasswordSummary,
 } from "@/types/api";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+const rawBase = import.meta.env.VITE_API_BASE;
+if (!rawBase) {
+  throw new Error('Variável de ambiente VITE_API_BASE não definida. Defina-a em frontend/.env com a URL completa');
+}
+const API_BASE_URL = rawBase.startsWith('http') ? rawBase : `http://${rawBase}`;
 const REQUEST_TIMEOUT_MS = 15000;
 const CSRF_HEADER_NAME = import.meta.env.VITE_CSRF_HEADER_NAME ?? "X-CSRF-Token";
 const CSRF_BOOTSTRAP_ENDPOINT = import.meta.env.VITE_CSRF_ENDPOINT ?? "/csrf-token";
 const DEFAULT_CSRF_COOKIE_NAMES = ["XSRF-TOKEN", "CSRF-TOKEN", "csrf-token", "_csrf"];
 const CSRF_COOKIE_NAMES = (
-  import.meta.env.VITE_CSRF_COOKIE_NAMES?.split(",").map((name) => name.trim()).filter(Boolean) ??
+  import.meta.env.VITE_CSRF_COOKIE_NAMES?.split(",").map((name: string) => name.trim()).filter(Boolean) ??
   DEFAULT_CSRF_COOKIE_NAMES
 );
 
