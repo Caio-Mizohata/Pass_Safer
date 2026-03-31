@@ -1,21 +1,18 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ENV } from '../config/env.ts';
 
-interface AppError extends Error {
-    statusCode?: number;
-}
-
-export const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction): void => {
-    const statusCode = err.statusCode || 500;
-    const isProd = ENV.NODE_ENV === 'production';
-
-    if (!isProd || statusCode === 500) {
-        console.error(`[ERROR] ${req.method} ${req.path} -`, err.message);
-        if (!isProd && err.stack) console.error(err.stack);
+export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    // Intercepta especificamente o erro de validação do token CSRF
+    if (err.code === 'EBADCSRFTOKEN') {
+        return res.status(403).json({
+            error: true,
+            message: "Sessão inválida ou expirada. Por favor, recarregue a página."
+        });
     }
 
-    res.status(statusCode).json({ 
-        error: true, 
-        message: isProd && statusCode === 500 ? 'Erro interno do servidor' : err.message 
+    // Seu tratamento de erros atual para outras exceções...
+    console.error(err);
+    return res.status(err.status || 500).json({
+        error: true,
+        message: err.message || "Erro interno do servidor"
     });
 };

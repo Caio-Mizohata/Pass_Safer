@@ -3,14 +3,29 @@ import { EncryptionService } from "./encryption.service.ts";
 import { Types } from "mongoose";
 
 export class PasswordService {
-    static async savePassword(userId: string, serviceName: string, usernameAccount: string, password: string) {
+    static async getPasswordsByUserId(userId: string) {
+        if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
+
+        const entries = await PasswordEntry.find({ userId: new Types.ObjectId(userId) }).select('-passwordHash');
+
+        return entries.map(entry => ({
+            id: entry._id,
+            serviceName: entry.serviceName,
+            usernameAccount: entry.usernameAccount,
+            password: '',
+            notes: entry.notes,
+        }));
+    }
+
+    static async savePassword(userId: string, serviceName: string, usernameAccount: string, password: string, notes: string) {
         if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
 
         return await PasswordEntry.create({
             userId: new Types.ObjectId(userId),
             serviceName,
             usernameAccount: usernameAccount?.trim() ? usernameAccount : null,
-            passwordHash: EncryptionService.encrypt(password)
+            passwordHash: EncryptionService.encrypt(password),
+            notes: notes?.trim() ? notes : null
         });
     }
 
@@ -41,7 +56,7 @@ export class PasswordService {
 
         if (data.serviceName !== undefined) entry.serviceName = data.serviceName;
         if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount.trim() ? data.usernameAccount : null;
-        if (data.notes !== undefined) entry.notes = data.notes;
+        if (data.notes !== undefined) entry.notes = data.notes?.trim() ? data.notes : null;
         if (data.password !== undefined) entry.passwordHash = EncryptionService.encrypt(data.password);
         await entry.save();
     }

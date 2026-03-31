@@ -12,8 +12,8 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
     },
     getSessionIdentifier: (req) => {
         const ua = req.headers['user-agent'] ?? 'unknown';
-        const ip = req.ip ?? 'unknown';
-        return `${ip}|${ua}`;
+        const lang = req.headers['accept-language'] ?? 'unknown';
+        return `${ua}|${lang}`;
     },
     cookieName: isProd ? "__Host-pass_safer-csrf-token" : "pass_safer-csrf-token",
     cookieOptions: {
@@ -25,9 +25,13 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
     getCsrfTokenFromRequest: (req) => req.headers["x-csrf-token"] as string | undefined
 });
 
+const doubleCsrfMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+    doubleCsrfProtection(req, res, next);
+};
+
 export const csrfMiddleware: RequestHandler[] = [
     cookieParser(),
-    doubleCsrfProtection
+    doubleCsrfMiddleware
 ];
 
 export const issueCsrfToken = (req: Request, res: Response, next: NextFunction): void => {

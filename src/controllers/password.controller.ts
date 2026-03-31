@@ -2,6 +2,20 @@ import type { Request, Response, NextFunction } from 'express';
 import { PasswordService } from '../services/password.service.ts';
 
 export class PasswordController {
+    static async getAllPasswords(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user?.id) {
+                res.status(401).json({ message: 'Usuário não autenticado' });
+                return;
+            }
+
+            const passwords = await PasswordService.getPasswordsByUserId(req.user.id);
+            res.json(passwords);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async savePassword(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.user?.id) {
@@ -9,14 +23,15 @@ export class PasswordController {
                 return;
             }
 
-            const { serviceName, username, password } = req.body;
+            const { serviceName, usernameAccount, password, notes } = req.body;
 
             if (!serviceName || !password) {
                 res.status(400).json({ message: 'Nome do serviço e senha são obrigatórios' });
                 return;
             }
 
-            const entry = await PasswordService.savePassword(req.user.id, serviceName, username, password);
+
+            const entry = await PasswordService.savePassword(req.user.id, serviceName, usernameAccount, password, notes);
             res.status(201).json(entry);
         } catch (error) {
             next(error);
@@ -57,7 +72,7 @@ export class PasswordController {
 
             const { id } = req.params;
             const { serviceName, usernameAccount, password, notes } = req.body;
-            
+
             if (!id || typeof id !== 'string') {
                 res.status(400).json({ message: 'ID da credencial inválido' });
                 return;

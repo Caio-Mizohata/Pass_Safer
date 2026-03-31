@@ -6,7 +6,7 @@ import type { IDecodedToken } from '../interfaces/IDecodedToken.ts';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader?.startsWith('Bearer ')) {
         res.status(401).json({ error: true, message: 'Autenticação necessária' });
         return;
@@ -28,8 +28,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const decoded = jwt.verify(token, ENV.JWT_SECRET) as IDecodedToken;
 
         if (typeof decoded !== 'object' || !decoded || !('id' in decoded)) {
-             res.status(401).json({ error: true, message: 'Token malformado ou inválido' });
-             return;
+            res.status(401).json({ error: true, message: 'Token malformado ou inválido' });
+            return;
         }
         req.user = decoded;
         next();

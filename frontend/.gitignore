@@ -1,0 +1,48 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+*.pid
+*.pid.lock
+
+# Dependency and build directories
+node_modules
+dist
+dist-ssr
+.vite
+
+# Test artifacts
+coverage
+.nyc_output
+playwright-report
+test-results
+blob-report
+
+# Local environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# TypeScript and lint caches
+*.tsbuildinfo
+.eslintcache
+
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

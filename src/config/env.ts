@@ -4,6 +4,11 @@ const getEnv = (key: string, encode = false): string => {
     return encode ? encodeURIComponent(value) : value;
 };
 
+const getOptionalEnv = (key: string, fallback: string): string => {
+    const value = process.env[key];
+    return value ?? fallback;
+};
+
 export const ENV = {
     MONGO_INITDB_ROOT_USERNAME: getEnv('MONGO_INITDB_ROOT_USERNAME', true),
     MONGO_INITDB_ROOT_PASSWORD: getEnv('MONGO_INITDB_ROOT_PASSWORD', true),
@@ -15,4 +20,6 @@ export const ENV = {
     JWT_SECRET: getEnv('JWT_SECRET'),
     ENCRYPTION_KEY: getEnv('ENCRYPTION_KEY'),
     SESSION_SECRET: getEnv('SESSION_SECRET'),
+    CORS_ALLOWED_ORIGINS: getOptionalEnv('CORS_ALLOWED_ORIGINS', 'http://localhost:8080,http://127.0.0.1:8080'),
+    CORS_ALLOW_NO_ORIGIN: getOptionalEnv('CORS_ALLOW_NO_ORIGIN', 'true'),
 };
