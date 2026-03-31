@@ -38,7 +38,7 @@ export class PasswordController {
         }
     }
 
-    static async getPasswords(req: Request, res: Response, next: NextFunction) {
+    static async getUserPassword(req: Request, res: Response, next: NextFunction) {
         try {
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });

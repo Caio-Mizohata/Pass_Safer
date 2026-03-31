@@ -449,14 +449,14 @@ export const authApi = {
 
 export const passwordsApi = {
   list: async () => {
-    const data = await request<unknown[]>("/v1/passwords", {
+    const data = await request<unknown[]>("/v1/passwordslist", {
       method: "GET",
     });
     return data.map((item) => normalizePasswordSummary(item)) as PasswordListResponse[];
   },
 
   create: async (data: CreatePasswordRequest) => {
-    const created = await request<unknown>("/v1/passwords", {
+    const created = await request<unknown>("/v1/passwordslist", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -464,18 +464,18 @@ export const passwordsApi = {
   },
 
   getById: async (id: string) => {
-    const data = await request<unknown>(`/v1/passwords/${id}`);
+    const data = await request<unknown>(`/v1/passwordslist/${id}`);
     return normalizePasswordDetail(data);
   },
 
   update: (id: string, data: UpdatePasswordRequest) =>
-    request<UpdatePasswordResponse>(`/v1/passwords/${id}`, {
+    request<UpdatePasswordResponse>(`/v1/passwordslist/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
 
   delete: (id: string) =>
-    request<DeletePasswordResponse>(`/v1/passwords/${id}`, {
+    request<DeletePasswordResponse>(`/v1/passwordslist/${id}`, {
       method: "DELETE",
     }),
 };
