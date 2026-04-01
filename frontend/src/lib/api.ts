@@ -456,7 +456,7 @@ export const passwordsApi = {
   },
 
   create: async (data: CreatePasswordRequest) => {
-    const created = await request<unknown>("/v1/passwordslist", {
+    const created = await request<unknown>("/v1/passwords", {
       method: "POST",
       body: JSON.stringify(data),
     });
