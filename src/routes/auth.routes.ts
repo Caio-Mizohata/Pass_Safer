@@ -10,6 +10,10 @@ Authrouter.get('/api/csrf-token', issueCsrfToken, (req, res) => {
     res.status(200).json({ message: 'Token CSRF emitido com sucesso' });
 });
 
+Authrouter.get('/api/v1/auth/health', (req, res) => {
+    res.status(200).json({ message: 'API funcionando!' });
+});
+
 Authrouter.post('/api/v1/register', authLimiter, issueCsrfToken, AuthController.register);
 Authrouter.post('/api/v1/login', authLimiter, issueCsrfToken, AuthController.login);
 Authrouter.post('/api/v1/logout', authMiddleware, AuthController.logout);
