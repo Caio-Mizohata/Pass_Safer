@@ -119,10 +119,29 @@ function fallbackMessageByStatus(status: number): string {
 }
 
 export function getApiErrorMessage(payload: unknown, fallback = "Erro inesperado"): string {
-  if (payload && typeof payload === "object" && "message" in payload) {
-    const message = (payload as { message?: unknown }).message;
-    if (typeof message === "string" && message.trim()) return message;
+  if (payload && typeof payload === "object") {
+    const data = payload as Record<string, unknown>;
+
+    const message = data.message;
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+
+    const issues = data.issues;
+    if (Array.isArray(issues)) {
+      return issues
+        .map(issue => {
+          if (typeof issue !== "object" || issue === null) return "";
+          const issueObj = issue as Record<string, unknown>;
+          const path = Array.isArray(issueObj.path) ? issueObj.path.join(".") : "dados";
+          const issueMessage = typeof issueObj.message === "string" ? issueObj.message : "";
+          return `${path}: ${issueMessage}`;
+        })
+        .filter(Boolean)
+        .join("; ");
+    }
   }
+
   return fallback;
 }
 
