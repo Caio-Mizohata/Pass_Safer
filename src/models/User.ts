@@ -1,13 +1,8 @@
-import { Schema, model, type Document } from "mongoose";
+import { Schema, model } from "mongoose";
 import argon2, { argon2id } from "argon2";
 import { PasswordEntry } from "./PasswordEntry.ts";
+import type { IUser } from "../interfaces/IUser.interface.ts";
 
-export interface IUser extends Document {
-    username?: string;
-    email: string;
-    passwordHash: string;
-    verifyPassword(password: string): Promise<boolean>;
-}
 
 const UserSchema = new Schema<IUser>({
     username: { 

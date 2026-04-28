@@ -1,16 +1,6 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model } from "mongoose";
+import type { IPasswordEntry } from "../interfaces/IPasswordEntry.interface.ts";
 
-export interface IPasswordEntry extends Document {
-    userId: Types.ObjectId; 
-    serviceName: string; 
-    usernameAccount?: string | null; 
-    passwordHash: { 
-        iv: string; 
-        tag: string; 
-        content: string; 
-    };
-    notes?: string | null;
-}
 
 const PasswordEntrySchema = new Schema<IPasswordEntry>({
     userId: { 

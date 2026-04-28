@@ -1,10 +1,6 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model } from "mongoose";
+import type { ITokenBlacklist } from "../interfaces/ITokenBlackList.interface.ts";
 
-export interface ITokenBlacklist extends Document {
-    token: string;
-    userId: Types.ObjectId;
-    expiresAt: Date;
-}
 
 const TokenBlacklistSchema = new Schema<ITokenBlacklist>({
     token: { 
