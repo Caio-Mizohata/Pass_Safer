@@ -20,6 +20,6 @@ export const ENV = {
     JWT_SECRET: getEnv('JWT_SECRET'),
     ENCRYPTION_KEY: getEnv('ENCRYPTION_KEY'),
     SESSION_SECRET: getEnv('SESSION_SECRET'),
-    CORS_ALLOWED_ORIGINS: getOptionalEnv('CORS_ALLOWED_ORIGINS', 'http://localhost:8080,http://127.0.0.1:8080'),
+    CORS_ALLOWED_ORIGINS: getEnv('CORS_ALLOWED_ORIGINS'),
     CORS_ALLOW_NO_ORIGIN: getOptionalEnv('CORS_ALLOW_NO_ORIGIN', 'true'),
 };
