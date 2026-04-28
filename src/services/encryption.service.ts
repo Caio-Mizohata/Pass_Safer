@@ -1,17 +1,12 @@
 import crypto from "node:crypto";
 import { ENV } from "../config/env.ts";
+import type { IEncryptedPayload } from "../interfaces/IEncryption.interface.ts";
 
 const ALGORITHM = "aes-256-gcm";
 const KEY = crypto.scryptSync(ENV.ENCRYPTION_KEY, ENV.SALT, 32);
 
-export interface EncryptedPayload {
-    iv: string;
-    content: string;
-    tag: string;
-}
-
 export class EncryptionService {
-    static encrypt(text: string): EncryptedPayload {
+    static encrypt(text: string): IEncryptedPayload {
         const iv = crypto.randomBytes(12);
         const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
         const encrypted = Buffer.concat([cipher.update(text, "utf8"), cipher.final()]);
@@ -23,7 +18,7 @@ export class EncryptionService {
         };
     }
 
-    static decrypt(payload: EncryptedPayload): string {
+    static decrypt(payload: IEncryptedPayload): string {
         try {
             const decipher = crypto.createDecipheriv(ALGORITHM, KEY, Buffer.from(payload.iv, "hex"));
             decipher.setAuthTag(Buffer.from(payload.tag, "hex"));

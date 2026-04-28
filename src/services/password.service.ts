@@ -17,7 +17,7 @@ export class PasswordService {
         }));
     }
 
-    static async savePassword(userId: string, serviceName: string, usernameAccount: string, password: string, notes: string) {
+    static async savePassword(userId: string, serviceName: string, password: string, usernameAccount?: string, notes?: string) {
         if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
 
         return await PasswordEntry.create({
@@ -46,7 +46,7 @@ export class PasswordService {
         };
     }
 
-    static async updatePassword(entryId: string, userId: string, data: { serviceName?: string; usernameAccount?: string; password?: string; notes?: string }) {
+    static async updatePassword(entryId: string, userId: string, data: { serviceName?: string | undefined; usernameAccount?: string | undefined; password?: string | undefined; notes?: string | undefined }) {
         if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
             throw new Error("Parâmetros inválidos");
         }
@@ -55,7 +55,7 @@ export class PasswordService {
         if (!entry) throw new Error("Acesso negado ou entrada não encontrada");
 
         if (data.serviceName !== undefined) entry.serviceName = data.serviceName;
-        if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount.trim() ? data.usernameAccount : null;
+        if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount?.trim() ? data.usernameAccount : null;
         if (data.notes !== undefined) entry.notes = data.notes?.trim() ? data.notes : null;
         if (data.password !== undefined) entry.passwordHash = EncryptionService.encrypt(data.password);
         await entry.save();

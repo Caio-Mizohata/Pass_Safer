@@ -6,9 +6,9 @@ import { TokenBlacklist } from "../models/TokenBlacklist.ts";
 import type { IDecodedToken } from "../interfaces/IDecodedToken.ts";
 
 export class AuthService {
-    static async register(userData: { email: string; passwordHash: string; username?: string }) {
+    static async register(userData: { email: string; passwordHash: string; username?: string}) {
         if (await User.exists({ email: userData.email })) {
-            throw new Error("Usuário já cadastrado");
+            throw new Error("Este email já foi cadastrado");
         }
         return await User.create(userData);
     }
@@ -32,7 +32,7 @@ export class AuthService {
 
     static async logout(token: string, userId: string) {
         const decoded = jwt.verify(token, ENV.JWT_SECRET) as IDecodedToken;
-        if (!decoded.exp) throw new Error("Token inválido");
+        if (!decoded.exp) throw new Error("Autorização inválida");
 
         await TokenBlacklist.create({
             token,
