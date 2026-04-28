@@ -61,7 +61,7 @@ export default function Register() {
           return;
         }
         if (error.status === 400) {
-          description = "Dados inválidos. Revise os campos e tente novamente.";
+          description = error.message;
         } else if (error.status === 409) {
           description = "Este e-mail já está em uso.";
         } else {
