@@ -1,8 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
 import { PasswordService } from '../services/password.service.ts';
+import type { AuthenticatedRequest } from '../types/authRequest.type.ts';
+import { PasswordEntrySchema, updatePasswordSchema } from '../schemas/password.schema.ts';
+import { z } from 'zod';
 
 export class PasswordController {
-    static async getAllPasswords(req: Request, res: Response, next: NextFunction) {
+    static async getAllPasswords(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });
@@ -16,29 +19,34 @@ export class PasswordController {
         }
     }
 
-    static async savePassword(req: Request, res: Response, next: NextFunction) {
+    static async savePassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
+            const parsedData = PasswordEntrySchema.safeParse(req.body);
+            if (!parsedData.success) {
+                const error: z.ZodError & { status?: number } = parsedData.error;
+                error.status = 400;
+                return next(error);
+            }
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });
                 return;
             }
 
-            const { serviceName, usernameAccount, password, notes } = req.body;
+            const { serviceName, usernameAccount, password, notes } = parsedData.data;
 
             if (!serviceName || !password) {
                 res.status(400).json({ message: 'Nome do serviço e senha são obrigatórios' });
                 return;
             }
 
-
-            const entry = await PasswordService.savePassword(req.user.id, serviceName, usernameAccount, password, notes);
+            const entry = await PasswordService.savePassword(req.user.id, serviceName, password, usernameAccount, notes);
             res.status(201).json(entry);
         } catch (error) {
             next(error);
         }
     }
 
-    static async getUserPassword(req: Request, res: Response, next: NextFunction) {
+    static async getUserPassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });
@@ -63,15 +71,21 @@ export class PasswordController {
         }
     }
 
-    static async updatePassword(req: Request, res: Response, next: NextFunction) {
+    static async updatePassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
+            const parsedData = updatePasswordSchema.safeParse(req.body);
+            if (!parsedData.success) {
+                const error: z.ZodError & { status?: number } = parsedData.error;
+                error.status = 400;
+                return next(error);
+            }
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });
                 return;
             }
 
             const { id } = req.params;
-            const { serviceName, usernameAccount, password, notes } = req.body;
+            const { serviceName, usernameAccount, password, notes } = parsedData.data;
 
             if (!id || typeof id !== 'string') {
                 res.status(400).json({ message: 'ID da credencial inválido' });
@@ -92,7 +106,7 @@ export class PasswordController {
         }
     }
 
-    static async deletePassword(req: Request, res: Response, next: NextFunction) {
+    static async deletePassword(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             if (!req.user?.id) {
                 res.status(401).json({ message: 'Usuário não autenticado' });
