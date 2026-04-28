@@ -21,7 +21,7 @@ class App {
     }
 
     middlewares(): void {
-        this.app.use(helmet({ contentSecurityPolicy: false }));
+        this.app.use(helmet({ contentSecurityPolicy: true }));
         this.app.use(corsMiddleware);
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
