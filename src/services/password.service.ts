@@ -12,7 +12,6 @@ export class PasswordService {
             id: entry._id,
             serviceName: entry.serviceName,
             usernameAccount: entry.usernameAccount,
-            password: '',
             notes: entry.notes,
         }));
     }
@@ -35,7 +34,7 @@ export class PasswordService {
         }
 
         const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
-        if (!entry) throw new Error('Senha não encontrada ou acesso negado');
+        if (!entry) throw new Error('Acesso negado ou entrada não encontrada');
 
         return {
             id: entry._id,
@@ -46,7 +45,7 @@ export class PasswordService {
         };
     }
 
-    static async updatePassword(entryId: string, userId: string, data: { serviceName?: string | undefined; usernameAccount?: string | undefined; password?: string | undefined; notes?: string | undefined }) {
+    static async updatePassword(entryId: string, userId: string, data: { serviceName?: string; usernameAccount?: string | undefined; password?: string | undefined; notes?: string | undefined }) {
         if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
             throw new Error("Parâmetros inválidos");
         }
@@ -59,6 +58,7 @@ export class PasswordService {
         if (data.notes !== undefined) entry.notes = data.notes?.trim() ? data.notes : null;
         if (data.password !== undefined) entry.passwordHash = EncryptionService.encrypt(data.password);
         await entry.save();
+        return entry;
     }
 
     static async deletePassword(entryId: string, userId: string): Promise<void> {

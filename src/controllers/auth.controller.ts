@@ -14,7 +14,7 @@ export class AuthController {
                 return next(error);
             }
             const { username, email, password } = parsedData.data;
-            await AuthService.register({ email, passwordHash: password, ...(username !== undefined ? { username } : {}) });
+            await AuthService.register({ email, passwordHash: password, ...(username ? { username } : {}) });
             res.status(201).json({ error: false, message: 'Usuário registrado com sucesso' });
         } catch (error) {
             next(error);

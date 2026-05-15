@@ -92,7 +92,13 @@ export class PasswordController {
                 return;
             }
 
-            await PasswordService.updatePassword(id, req.user.id, { serviceName, usernameAccount: usernameAccount, password, notes });
+            const updateData: { serviceName?: string; usernameAccount?: string; password?: string; notes?: string } = {};
+            if (serviceName !== undefined) updateData.serviceName = serviceName;
+            if (usernameAccount !== undefined) updateData.usernameAccount = usernameAccount;
+            if (password !== undefined) updateData.password = password;
+            if (notes !== undefined) updateData.notes = notes;
+
+            await PasswordService.updatePassword(id, req.user.id, updateData);
 
             const updatedFields = [];
             if (serviceName) updatedFields.push('Serviço');
