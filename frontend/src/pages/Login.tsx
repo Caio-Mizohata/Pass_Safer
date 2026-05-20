@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Shield } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 import { useToast } from "@/hooks/use-toast";
 import { ApiError } from "@/lib/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -65,53 +65,41 @@ export default function Login() {
           <p className="text-sm text-muted-foreground">Suas senhas, protegidas.</p>
         </div>
 
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl">Entrar</CardTitle>
-            <CardDescription>Acesse sua conta para gerenciar suas senhas</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <div className="relative">
+        <div className="rounded-lg p-6 bg-background/50 shadow-xl shadow-primary/30">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Entrar</CardTitle>
+              <CardDescription>Acesse sua conta para gerenciar suas senhas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
-                    autoComplete="current-password"
-                    className="pr-10"
+                    autoComplete="email"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
                 </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Entrando..." : "Entrar"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <PasswordInput
+                  id="password"
+                  label="Senha"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={setPassword}
+                  autoComplete="current-password"
+                />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Entrando..." : "Entrar"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
         <p className="text-center text-sm text-muted-foreground">
           Não tem conta?{" "}

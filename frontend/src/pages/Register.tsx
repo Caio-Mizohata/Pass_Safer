@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Shield } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 import { useToast } from "@/hooks/use-toast";
 import { ApiError } from "@/lib/api";
 
@@ -13,8 +14,6 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -93,76 +92,52 @@ export default function Register() {
           </h1>
         </div>
 
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl">Criar conta</CardTitle>
-            <CardDescription>Registre-se para começar a proteger suas senhas</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Nome de usuário (opcional)</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Seu nome"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="username"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <div className="relative">
+        <div className="rounded-lg p-6 bg-background/50 shadow-xl shadow-primary/30">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Criar conta</CardTitle>
+              <CardDescription>Registre-se para começar a proteger suas senhas</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nome de usuário (opcional)</Label>
                   <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                    className="pr-10"
+                    id="username"
+                    type="text"
+                    placeholder="Seu nome"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
                 </div>
-              </div>
-              {/* <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar senha</Label>
-                <Input
-                  id="confirmPassword"
-                  type={showPassword ? "text" : "password"}
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                <PasswordInput
+                  id="password"
+                  label="Senha"
                   placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
+                  value={password}
+                  onChange={setPassword}
                   autoComplete="new-password"
                 />
-              </div> */}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Criando conta..." : "Criar conta"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Criando conta..." : "Criar conta"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
         <p className="text-center text-sm text-muted-foreground">
           Já tem conta?{" "}
