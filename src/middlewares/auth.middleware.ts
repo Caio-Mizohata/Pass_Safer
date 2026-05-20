@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import type { AuthenticatedRequest } from '../types/authRequest.type.ts';
-import type { IDecodedToken } from '../interfaces/IDecodedToken.ts';
+import type { IDecodedToken } from '../interfaces/IDecodedToken.interface.ts';
 import jwt from 'jsonwebtoken';
 import { ENV } from '../config/env.ts';
 import { TokenBlacklist } from '../models/TokenBlacklist.ts';
