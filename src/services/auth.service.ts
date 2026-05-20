@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
 import { User } from "../models/User.ts";
 import { TokenBlacklist } from "../models/TokenBlacklist.ts";
-import type { IDecodedToken } from "../interfaces/IDecodedToken.ts";
+import type { IDecodedToken } from "../interfaces/IDecodedToken.interface.ts";
 
 export class AuthService {
     static async register(userData: { email: string; passwordHash: string; username?: string}) {
