@@ -11,9 +11,10 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
         return ENV.SESSION_SECRET;
     },
     getSessionIdentifier: (req) => {
+        const sessionId = (req as any).sessionID;
+        if (sessionId) return sessionId;
         const ua = req.headers['user-agent'] ?? 'unknown';
-        const lang = req.headers['accept-language'] ?? 'unknown';
-        return `${ua}|${lang}`;
+        return ua; 
     },
     cookieName: isProd ? "__Host-pass_safer-csrf-token" : "pass_safer-csrf-token",
     cookieOptions: {
