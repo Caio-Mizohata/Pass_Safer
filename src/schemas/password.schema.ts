@@ -13,7 +13,7 @@ export const PasswordEntrySchema = z.object({
     notes: z.string()
         .optional()
         .or(z.literal(''))
-})
+}).strict() // Rejeita campos desconhecidos 
 
 export const updatePasswordSchema = PasswordEntrySchema.partial().refine(
   data => Object.keys(data).length > 0,
