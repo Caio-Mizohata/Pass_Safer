@@ -2,6 +2,7 @@ import type { Response, NextFunction } from 'express';
 import { PasswordService } from '../services/password.service.ts';
 import type { AuthenticatedRequest } from '../types/authRequest.type.ts';
 import { PasswordEntrySchema, updatePasswordSchema } from '../schemas/password.schema.ts';
+import type { IUpdateData } from '../interfaces/IUpdateData.interface.ts';
 import { z } from 'zod';
 
 export class PasswordController {
@@ -92,7 +93,7 @@ export class PasswordController {
                 return;
             }
 
-            const updateData: { serviceName?: string; usernameAccount?: string; password?: string; notes?: string } = {};
+            const updateData: IUpdateData = {};
             if (serviceName !== undefined) updateData.serviceName = serviceName;
             if (usernameAccount !== undefined) updateData.usernameAccount = usernameAccount;
             if (password !== undefined) updateData.password = password;
