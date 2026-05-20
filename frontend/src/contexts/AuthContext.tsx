@@ -13,6 +13,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const clearAuthState = useCallback(() => {
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setUserId(null);
     setUserEmail(null);
+    setUserName(null);
   }, []);
 
   useEffect(() => {
@@ -108,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(true);
     setUserId(user?.id ?? null);
     setUserEmail(user?.email ?? data.email);
+    setUserName(user?.username ?? null);
   }, []);
 
   const register = useCallback(async (data: RegisterRequest) => {
@@ -132,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated,
         userId,
         userEmail,
+        userName,
         login,
         register,
         logout,
