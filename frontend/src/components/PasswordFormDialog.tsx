@@ -112,7 +112,7 @@ export default function PasswordFormDialog({ open, onOpenChange, editing, onSubm
             <Label htmlFor="serviceName">Serviço *</Label>
             <Input
               id="serviceName"
-              placeholder="Gmail, Netflix, GitHub..."
+              placeholder="Nome do serviço"
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               required
@@ -139,7 +139,7 @@ export default function PasswordFormDialog({ open, onOpenChange, editing, onSubm
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required={!editing}
-                className="pr-10"
+                className="pr-10 [&::-ms-reveal]:hidden [&::-webkit-credentials-auto-fill-button]:hidden"
                 autoComplete={editing ? "off" : "new-password"}
               />
               <button
