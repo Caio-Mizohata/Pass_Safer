@@ -14,34 +14,8 @@ import type {
   PasswordSummary,
 } from "@/types/api.ts";
 
-// Define um fallback seguro (relativo) caso a variável não exista no .env
-const rawBase = import.meta.env.VITE_API_BASE || "/api";
-
-if (rawBase === "/api") {
-  console.warn("⚠️ VITE_API_BASE não definida. Utilizando o fallback padrão: '/api'. Certifique-se de que o proxy do Vite está configurado.");
-}
-
-// Configurações de normalização da URL base da API para garantir consistência e evitar erros comuns de formatação
-export const normalizeApiBase = (base: string): string => {
-  // Remoção de espaços em branco e barras finais para evitar problemas de concatenação
-  const trimmed = base.trim().replace(/\/+$/, "");
-
-  // Verificação simples para URLs absolutas (com http:// ou https://)
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed;
-  }
-
-  // Caminho relativo que começa com "/"
-  if (trimmed.startsWith("/")) {
-    return trimmed;
-  }
-
-  // Se for um domínio puro do ngrok sem protocolo, assume HTTPS por segurança
-  return `https://${trimmed}`;
-};
-
-
-const API_BASE_URL = normalizeApiBase(rawBase);
+// API base URL (proxy gerenciado pelo Vite em vite.config.ts)
+const API_BASE_URL = "/api";
 const REQUEST_TIMEOUT_MS = 15000;
 const CSRF_HEADER_NAME = import.meta.env.VITE_CSRF_HEADER_NAME ?? "X-CSRF-Token";
 const CSRF_BOOTSTRAP_ENDPOINT = import.meta.env.VITE_CSRF_ENDPOINT ?? "/csrf-token";
