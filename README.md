@@ -1,5 +1,7 @@
 # Pass_Safer
 
+Plataforma fullstack que permite armazenar, gerenciar e proteger suas credenciais com autenticação JWT e camadas de segurança robustas.
+
 Instruções rápidas para setup, execução e contribuições deste projeto (backend + frontend).
 
 ## Pré-requisitos
@@ -26,18 +28,50 @@ npm install
 
 ## Variáveis de ambiente
 
-Crie um arquivo `.env` no backend (`src/`), definindo pelo menos:
+Crie um arquivo `.env` na raiz do projeto, definindo as seguintes variáveis:
 
-- `PORT` — porta do servidor
-- `MONGO_URI` — string de conexão com o MongoDB
-- `JWT_SECRET` — segredo para tokens
+**Servidor e Ambiente:**
 
-Exemplo mínimo:
+- `PORT` — porta do servidor (padrão: 3001)
+- `NODE_ENV` — ambiente de execução (development/production)
+
+**MongoDB:**
+
+- `MONGO_INITDB_ROOT_USERNAME` — usuário root do MongoDB
+- `MONGO_INITDB_ROOT_PASSWORD` — senha root do MongoDB
+- `MONGO_INITDB_DATABASE` — nome do banco de dados
+- `MONGO_AUTH_SOURCE` — fonte de autenticação (padrão: admin)
+
+**Segurança:**
+
+- `JWT_SECRET` — segredo para geração de tokens JWT
+- `ENCRYPTION_KEY` — chave para criptografia de dados
+- `SESSION_SECRET` — segredo para sessões
+- `SALT` — número de rounds de salt para bcrypt
+
+**CORS:**
+
+- `CORS_ALLOWED_ORIGINS` — origens permitidas separadas por vírgula
+- `CORS_ALLOW_NO_ORIGIN` — permitir requisições sem origem (true/false)
+
+Exemplo:
 
 ```text
-PORT=4000
-MONGO_URI=mongodb://localhost:27017/pass_safer
-JWT_SECRET=troque_para_um_segredo_forte
+PORT=3001
+NODE_ENV=development
+
+MONGO_INITDB_ROOT_USERNAME=seu_usuario
+MONGO_INITDB_ROOT_PASSWORD=sua_senha
+MONGO_INITDB_DATABASE=Password_Manager
+MONGO_AUTH_SOURCE=admin
+
+SALT=12
+JWT_SECRET=sua_chave_jwt_secreta
+ENCRYPTION_KEY=sua_chave_encriptacao_secreta
+SESSION_SECRET=sua_chave_sessao_secreta
+
+CORS_ALLOWED_ORIGINS=http://localhost:8080,http://localhost:3001
+CORS_ALLOW_NO_ORIGIN=true
 ```
 
 ## Executando o projeto
@@ -58,20 +92,9 @@ npm run dev
 
 Abra o frontend em `http://localhost:5173` (ou porta mostrada pelo Vite).
 
-## Testes
-
-Para rodar testes do frontend:
-
-```powershell
-cd frontend
-npm test
-```
-
-Para testes do backend (se existirem), execute os comandos na pasta `src`.
-
 ## Lint e formatação
 
-Verifique e corrija com os scripts presentes em cada `package.json` (frontend/backend).
+Para o uso de scripts crie ou altere os scripts presentes em cada `package.json` (frontend/backend).
 
 ## Contribuição
 
