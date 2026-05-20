@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { PasswordSummary, CreatePasswordRequest, UpdatePasswordRequest } from "@/types/api";
 
 export default function Dashboard() {
-  const { logout, userEmail } = useAuth();
+  const { logout, userEmail, userName } = useAuth();
   const { toast } = useToast();
 
   const [passwords, setPasswords] = useState<PasswordSummary[]>([]);
@@ -143,13 +143,16 @@ export default function Dashboard() {
               Pass<span className="text-emerald-500">Safer</span>
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            {userEmail && (
-              <span className="hidden text-sm text-muted-foreground sm:inline">{userEmail}</span>
+          <div className="flex items-center gap-1 sm:gap-3">
+            {(userName || userEmail) && (
+              <span className="hidden text-xs sm:text-sm text-muted-foreground sm:inline">
+                {userName || userEmail}
+              </span>
             )}
-            <Button variant="ghost" size="sm" onClick={handleLogout} disabled={loggingOut}>
-              <LogOut className="mr-1.5 h-4 w-4" />
-              {loggingOut ? "Saindo..." : "Sair"}
+            <Button variant="ghost" size="sm" onClick={handleLogout} disabled={loggingOut} className="text-xs sm:text-sm">
+              <LogOut className="mr-1 sm:mr-1.5 h-4 w-4" />
+              <span className="hidden sm:inline">{loggingOut ? "Saindo..." : "Sair"}</span>
+              <span className="sm:hidden">{loggingOut ? "..." : ""}</span>
             </Button>
           </div>
         </div>
