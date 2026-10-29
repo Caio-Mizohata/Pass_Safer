@@ -92,7 +92,7 @@ npm run dev
 
 Abra o frontend em `http://localhost:5173` (ou porta mostrada pelo Vite).
 
-## Segurança do backend
+## Segurança 
 
 - Senhas de acesso são armazenadas com Argon2id.
 - Credenciais salvas são protegidas com AES-256-GCM, IV aleatório e tag de autenticação.
