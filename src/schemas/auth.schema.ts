@@ -17,10 +17,9 @@ export const RegisterSchema = z.object({
         .max(100, "O email não pode ter mais de 100 caracteres")
         .regex(EmailRegex, "Formato de email inválido"),
     password: z.string({ error: "A senha é obrigatória" })
-        .min(1, "A senha é obrigatória")
+        .min(8, "A senha deve ter pelo menos 8 caracteres")
         .max(100, "A senha não pode ter mais de 100 caracteres")
-        // .regex(PasswordRegex, "A senha deve ter pelo menos 8 caracteres, incluindo letras e números")
-});
+}).strict();
 
 export const LoginSchema = z.object({
     email: z.email({ error: "O email é obrigatório" })
@@ -29,4 +28,5 @@ export const LoginSchema = z.object({
         .regex(EmailRegex, "Formato de email inválido"),
     password: z.string({ error: "A senha é obrigatória" })
         .min(1, "A senha é obrigatória")
-});
+        .max(100, "A senha não pode ter mais de 100 caracteres")
+}).strict();

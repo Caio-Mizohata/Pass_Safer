@@ -61,12 +61,8 @@ export class PasswordController {
                 return;
             }
 
-            try {
-                const entry = await PasswordService.getDecryptedPasswordById(entryId, req.user.id);
-                return res.json(entry);
-            } catch (error) {
-                return res.status(404).json({ message: 'Credencial não encontrada' });
-            }
+            const entry = await PasswordService.getDecryptedPasswordById(entryId, req.user.id);
+            return res.json(entry);
         } catch (error) {
             next(error);
         }

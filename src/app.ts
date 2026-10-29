@@ -8,13 +8,14 @@ import { corsMiddleware } from "./middlewares/cors.middleware.ts";
 import helmet from "helmet";
 import { errorHandler } from "./middlewares/error.middleware.ts";
 import { globalLimiter } from "./middlewares/rateLimit.middleware.ts";
+import { ENV } from "./config/env.ts";
 
 class App {
     public app: Application;
 
     constructor() {
         this.app = express();
-        this.app.set("trust proxy", 1); // Habilita o reconhecimento de proxies (importante para ngrok)
+        if (ENV.TRUST_PROXY_HOPS > 0) this.app.set("trust proxy", ENV.TRUST_PROXY_HOPS);
         this.middlewares();
         this.routes();
         this.errorHandling();
@@ -23,8 +24,7 @@ class App {
     middlewares(): void {
         this.app.use(helmet({ contentSecurityPolicy: true }));
         this.app.use(corsMiddleware);
-        this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(express.json({ limit: "16kb" }));
         this.app.use(globalLimiter);
         this.app.use(csrfMiddleware);
     }
