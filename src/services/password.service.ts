@@ -2,6 +2,8 @@ import { PasswordEntry } from "../models/PasswordEntry.ts";
 import { EncryptionService } from "./encryption.service.ts";
 import { Types } from "mongoose";
 
+const httpError = (status: number, message: string) => Object.assign(new Error(message), { status });
+
 export class PasswordService {
     static async getPasswordsByUserId(userId: string) {
         if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
@@ -19,22 +21,29 @@ export class PasswordService {
     static async savePassword(userId: string, serviceName: string, password: string, usernameAccount?: string, notes?: string) {
         if (!Types.ObjectId.isValid(userId)) throw new Error('ID do usuário inválido');
 
-        return await PasswordEntry.create({
+        const entry = await PasswordEntry.create({
             userId: new Types.ObjectId(userId),
             serviceName,
             usernameAccount: usernameAccount?.trim() ? usernameAccount : null,
             passwordHash: EncryptionService.encrypt(password),
             notes: notes?.trim() ? notes : null
         });
+
+        return {
+            id: entry._id,
+            serviceName: entry.serviceName,
+            usernameAccount: entry.usernameAccount,
+            notes: entry.notes,
+        };
     }
 
     static async getDecryptedPasswordById(entryId: string, userId: string) {
         if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
-            throw new Error('IDs inválidos');
+            throw httpError(400, 'ID da credencial inválido');
         }
 
         const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
-        if (!entry) throw new Error('Acesso negado ou entrada não encontrada');
+        if (!entry) throw httpError(404, 'Credencial não encontrada');
 
         return {
             id: entry._id,
@@ -47,11 +56,11 @@ export class PasswordService {
 
     static async updatePassword(entryId: string, userId: string, data: { serviceName?: string; usernameAccount?: string | undefined; password?: string | undefined; notes?: string | undefined }) {
         if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
-            throw new Error("Parâmetros inválidos");
+            throw httpError(400, 'ID da credencial inválido');
         }
 
         const entry = await PasswordEntry.findOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
-        if (!entry) throw new Error("Acesso negado ou entrada não encontrada");
+        if (!entry) throw httpError(404, 'Credencial não encontrada');
 
         if (data.serviceName !== undefined) entry.serviceName = data.serviceName;
         if (data.usernameAccount !== undefined) entry.usernameAccount = data.usernameAccount?.trim() ? data.usernameAccount : null;
@@ -63,10 +72,10 @@ export class PasswordService {
 
     static async deletePassword(entryId: string, userId: string): Promise<void> {
         if (!Types.ObjectId.isValid(entryId) || !Types.ObjectId.isValid(userId)) {
-            throw new Error("Parâmetros inválidos");
+            throw httpError(400, 'ID da credencial inválido');
         }
 
         const result = await PasswordEntry.deleteOne({ _id: new Types.ObjectId(entryId), userId: new Types.ObjectId(userId) });
-        if (result.deletedCount === 0) throw new Error("Acesso negado ou entrada não encontrada");
+        if (result.deletedCount === 0) throw httpError(404, 'Credencial não encontrada');
     }
 }

@@ -6,16 +6,15 @@ Instruções rápidas para setup, execução e contribuições deste projeto (ba
 
 ## Pré-requisitos
 
-- Node.js >= 18
+- Node.js >= 20.19
 - npm ou pnpm
 - MongoDB (local ou serviço externo)
 
 ## Instalação
 
-1. Instalar dependências do backend:
+1. Instalar dependências do backend na raiz do projeto:
 
 ```powershell
-cd src
 npm install
 ```
 
@@ -34,6 +33,7 @@ Crie um arquivo `.env` na raiz do projeto, definindo as seguintes variáveis:
 
 - `PORT` — porta do servidor (padrão: 3001)
 - `NODE_ENV` — ambiente de execução (development/production)
+- `TRUST_PROXY_HOPS` — quantidade de proxies confiáveis à frente da aplicação (`0` por padrão)
 
 **MongoDB:**
 
@@ -44,10 +44,10 @@ Crie um arquivo `.env` na raiz do projeto, definindo as seguintes variáveis:
 
 **Segurança:**
 
-- `JWT_SECRET` — segredo para geração de tokens JWT
-- `ENCRYPTION_KEY` — chave para criptografia de dados
-- `SESSION_SECRET` — segredo para sessões
-- `SALT` — número de rounds de salt para bcrypt
+- `JWT_SECRET` — segredo do JWT com ao menos 32 caracteres em produção
+- `ENCRYPTION_KEY` — chave-base da criptografia com ao menos 32 caracteres em produção
+- `SESSION_SECRET` — segredo do CSRF com ao menos 32 caracteres em produção
+- `SALT` — salt estável usado na derivação da chave, com ao menos 16 caracteres em produção
 
 **CORS:**
 
@@ -59,16 +59,17 @@ Exemplo:
 ```text
 PORT=3001
 NODE_ENV=development
+TRUST_PROXY_HOPS=0
 
 MONGO_INITDB_ROOT_USERNAME=seu_usuario
 MONGO_INITDB_ROOT_PASSWORD=sua_senha
 MONGO_INITDB_DATABASE=Password_Manager
 MONGO_AUTH_SOURCE=admin
 
-SALT=12
-JWT_SECRET=sua_chave_jwt_secreta
-ENCRYPTION_KEY=sua_chave_encriptacao_secreta
-SESSION_SECRET=sua_chave_sessao_secreta
+SALT=um_salt_estavel_com_16_caracteres
+JWT_SECRET=um_segredo_jwt_aleatorio_com_32_caracteres
+ENCRYPTION_KEY=uma_chave_aleatoria_com_32_caracteres
+SESSION_SECRET=um_segredo_csrf_aleatorio_com_32_caracteres
 
 CORS_ALLOWED_ORIGINS=http://localhost:8080,http://localhost:3001
 CORS_ALLOW_NO_ORIGIN=true
@@ -76,10 +77,9 @@ CORS_ALLOW_NO_ORIGIN=true
 
 ## Executando o projeto
 
-- Rodar backend (na pasta `src`):
+- Rodar backend na raiz do projeto:
 
 ```powershell
-cd src
 npm run dev
 ```
 
@@ -91,6 +91,25 @@ npm run dev
 ```
 
 Abra o frontend em `http://localhost:5173` (ou porta mostrada pelo Vite).
+
+## Segurança 
+
+- Senhas de acesso são armazenadas com Argon2id.
+- Credenciais salvas são protegidas com AES-256-GCM, IV aleatório e tag de autenticação.
+- Tokens JWT expiram em uma hora e aceitam explicitamente apenas o algoritmo HS256.
+- Todas as rotas de credenciais exigem autenticação e consultam registros pelo par `_id` e `userId`, evitando IDOR/BOLA.
+- Os payloads são validados por schemas estritos e o corpo JSON é limitado a 16 KB.
+- Helmet, CORS, CSRF e rate limiting são aplicados globalmente ou nas rotas sensíveis.
+- Erros internos retornam uma mensagem genérica. Uma credencial inexistente ou pertencente a outro usuário retorna o mesmo `404`:
+
+```json
+{
+  "error": true,
+  "message": "Credencial não encontrada"
+}
+```
+
+Não altere `ENCRYPTION_KEY` ou `SALT` depois que houver credenciais armazenadas sem antes executar uma migração, pois a troca impede a descriptografia dos registros existentes.
 
 ## Lint e formatação
 

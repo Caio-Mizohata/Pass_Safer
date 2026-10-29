@@ -4,6 +4,7 @@ import type { IDecodedToken } from '../interfaces/IDecodedToken.interface.ts';
 import jwt from 'jsonwebtoken';
 import { ENV } from '../config/env.ts';
 import { TokenBlacklist } from '../models/TokenBlacklist.ts';
+import { Types } from 'mongoose';
 
 export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
@@ -26,9 +27,9 @@ export const authMiddleware = async (req: AuthenticatedRequest, res: Response, n
             return;
         }
 
-        const decoded = jwt.verify(token, ENV.JWT_SECRET) as IDecodedToken;
+        const decoded = jwt.verify(token, ENV.JWT_SECRET, { algorithms: ['HS256'] }) as IDecodedToken;
 
-        if (typeof decoded !== 'object' || !decoded || !('id' in decoded)) {
+        if (typeof decoded !== 'object' || !decoded || !('id' in decoded) || !Types.ObjectId.isValid(decoded.id)) {
             res.status(401).json({ error: true, message: 'Credenciais malformadas ou inválidas' });
             return;
         }
